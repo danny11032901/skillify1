@@ -1,0 +1,147 @@
+import tkinter as tk
+from tkinter import messagebox
+import random
+#question pool
+full_questions = [
+    "What does CPU stand for?",
+    "Which language is used for web apps?",
+    "Who developed Python?",
+    "What does RAM stand for?",
+    "Which company created the Windows OS?",
+    "What is the capital of France?",
+    "Which keyword is used to define a function in Python?",
+    "Which data structure uses LIFO?",
+    "What does HTML stand for?",
+    "What is the extension for a Python file?",
+    "Which protocol is used for web communication?",
+    "What does IDE stand for?",
+    "Which company owns Android?",
+    "What is the output of 3 ** 2 in Python?",
+    "What does AI stand for?"
+]
+full_options = [
+    ["Central Processing Unit", "Computer Personal Unit", "Control Processing Unit", "Central Program Unit"],
+    ["Python", "Java", "HTML", "All of the above"],
+    ["Dennis Ritchie", "Guido van Rossum", "James Gosling", "Bjarne Stroustrup"],
+    ["Random Access Memory", "Read Access Memory", "Run Accept Memory", "Read And Manage"],
+    ["Google", "Apple", "Microsoft", "IBM"],
+    ["Berlin", "Madrid", "Paris", "Lisbon"],
+    ["function", "define", "def", "fun"],
+    ["Queue", "List", "Stack", "Set"],
+    ["HyperText Markup Language", "HighText Machine Language", "Hyper Tool Multi Language", "None"],
+    [".py", ".txt", ".java", ".exe"],
+    ["FTP", "SMTP", "HTTP", "IP"],
+    ["Integrated Development Environment", "Internet Development Environment", "Internal Debug Editor", "Interface Data Editor"],
+    ["Apple", "Microsoft", "Google", "Meta"],
+    ["6", "9", "5", "8"],
+    ["Artificial Intelligence", "Automatic Input", "Auto Index", "Advanced Integration"]
+]
+full_answers = [0, 3, 1, 0, 2, 2, 2, 2, 0, 0, 2, 0, 2, 1, 0]
+# Randomly pick 5 unique questions
+indices = random.sample(range(15), 5)
+questions = [full_questions[i] for i in indices]
+options = [full_options[i] for i in indices]
+answers = [full_answers[i] for i in indices]
+class QuizApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("🧠 Python Quiz App")
+        self.root.geometry("700x500")
+        self.root.config(bg="#1f1f2e")
+        self.qn = 0
+        self.score = 0
+        self.selected = tk.IntVar()
+        self.user_answers = []
+        self.setup_ui()
+    def setup_ui(self):
+        self.title = tk.Label(self.root, text="Welcome to the Quiz!", font=("Helvetica", 22, "bold"), bg="#1f1f2e", fg="#00f7ff")
+        self.title.pack(pady=20)
+        self.question = tk.Label(self.root, font=("Helvetica", 18), wraplength=600, bg="#1f1f2e", fg="white")
+        self.question.pack(pady=20)
+        self.opts = []
+        for i in range(4):
+            btn = tk.Radiobutton(self.root, font=("Helvetica", 14), bg="#1f1f2e", fg="#00eaff", activebackground="#2e2e44",
+                                 variable=self.selected, value=i, selectcolor="#2e2e44", wraplength=600)
+            btn.pack(anchor="w", padx=60, pady=5)
+            self.opts.append(btn)
+        self.next_btn = tk.Button(self.root, text="Next", font=("Helvetica", 14), bg="#00f7ff", fg="#000", command=self.next_q)
+        self.next_btn.pack(pady=20)
+        self.display_question()
+    def display_question(self):
+        self.selected.set(-1)
+        self.question.config(text=f"Q{self.qn + 1}: {questions[self.qn]}")
+        for i, opt in enumerate(options[self.qn]):
+            self.opts[i].config(text=opt)
+
+    def next_q(self):
+        if self.selected.get() == -1:
+            messagebox.showwarning("Warning", "Please select an option!")
+            return
+        selected_index = self.selected.get()
+        self.user_answers.append(selected_index)
+        if selected_index == answers[self.qn]:
+            self.score += 1
+        self.qn += 1
+        if self.qn == len(questions):
+            self.show_result()
+        else:
+            self.display_question()
+    
+    def show_result(self):
+        for widget in self.root.winfo_children():
+            widget.destroy()
+        result_text = f"🎉 Your Score: {self.score} / {len(questions)}"
+        result_label = tk.Label(self.root, text=result_text, font=("Helvetica", 22, "bold"), bg="#1f1f2e", fg="#00ff88")
+        result_label.pack(pady=40)
+        review_btn = tk.Button(self.root, text="Review Your Answers", font=("Helvetica", 14), bg="#00f7ff", fg="black", command=self.review_answers)
+        review_btn.pack(pady=10)
+        restart_btn = tk.Button(self.root, text="Play Again", font=("Helvetica", 14), bg="#00f7ff", fg="black", command=self.restart)
+        restart_btn.pack(pady=10)
+
+    def review_answers(self):
+        for widget in self.root.winfo_children():
+            widget.destroy()
+        canvas = tk.Canvas(self.root, bg="#1f1f2e", highlightthickness=0)
+        scrollbar = tk.Scrollbar(self.root, orient="vertical", command=canvas.yview)
+        scroll_frame = tk.Frame(canvas, bg="#1f1f2e")
+        scroll_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        canvas.create_window((0, 0), window=scroll_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        review_title = tk.Label(scroll_frame, text="📋 Quiz Review", font=("Helvetica", 22, "bold"), bg="#1f1f2e", fg="#ffaa00")
+        review_title.pack(pady=20)
+        for i in range(len(questions)):
+            q_text = f"Q{i+1}: {questions[i]}"
+            user_ans = options[i][self.user_answers[i]]
+            correct_ans = options[i][answers[i]]
+            color = "#00ff88" if self.user_answers[i] == answers[i] else "#ff4d4d"
+            question_label = tk.Label(scroll_frame, text=q_text, font=("Helvetica", 14, "bold"), bg="#1f1f2e", fg="white", wraplength=650, justify="left")
+            question_label.pack(anchor="w", padx=20, pady=5)
+            user_label = tk.Label(scroll_frame, text=f"Your answer: {user_ans}", font=("Helvetica", 12), bg="#1f1f2e", fg=color)
+            user_label.pack(anchor="w", padx=40)
+            correct_label = tk.Label(scroll_frame, text=f"Correct answer: {correct_ans}", font=("Helvetica", 12), bg="#1f1f2e", fg="#00ffff")
+            correct_label.pack(anchor="w", padx=40, pady=(0,10))
+        back_btn = tk.Button(scroll_frame, text="Back to Home", font=("Helvetica", 14), bg="#00f7ff", fg="black", command=self.restart)
+        back_btn.pack(pady=20)
+    def restart(self):
+        # Pick new questions
+        global questions, options, answers
+        new_indices = random.sample(range(15), 5)
+        questions = [full_questions[i] for i in new_indices]
+        options = [full_options[i] for i in new_indices]
+        answers = [full_answers[i] for i in new_indices]
+        self.qn = 0
+        self.score = 0
+        self.user_answers = []
+        for widget in self.root.winfo_children():
+            widget.destroy()
+        self.setup_ui()
+# Run the app
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = QuizApp(root)
+    root.mainloop()
