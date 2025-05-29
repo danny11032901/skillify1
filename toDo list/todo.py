@@ -20,45 +20,45 @@ def save_tasks(tasks):
 def banner():
     print("""
 ╔══════════════════════════════════╗
-  🌸  My Stylish To-Do List App  🌸
+    My Stylish To-Do List App  
 ╚══════════════════════════════════╝
 """)
-    print("📋 Organize your life. One task at a time.\n")
+    print(" Organize your life. One task at a time.\n")
 
 def show_tasks(tasks):
     if not tasks:
-        print("🌻 No tasks yet. Add one now!\n")
+        print(" No tasks yet. Add one now!\n")
     else:
-        print("📝 Your Tasks:\n")
+        print(" Your Tasks:\n")
         for i, task in enumerate(tasks, 1):
             status = "✅ Done" if task['done'] else "⏳ Pending"
             print(f"{i}. {task['title']} - {status}")
 
 def add_task(tasks):
-    title = input("\n➕ Enter your task: ")
+    title = input("\n Enter your task: ")
     tasks.append({"title": title, "done": False})
     save_tasks(tasks)
-    print("✅ Task added!\n")
+    print(" Task added!\n")
 
 def mark_done(tasks):
     show_tasks(tasks)
     try:
-        choice = int(input("\n✔️  Enter task number to mark as done: "))
+        choice = int(input("\n Enter task number to mark as done: "))
         tasks[choice-1]["done"] = True
         save_tasks(tasks)
-        print("✅ Task marked as done!\n")
+        print(" Task marked as done!\n")
     except (ValueError, IndexError):
-        print("⚠️ Invalid choice!\n")
+        print(" Invalid choice!\n")
 
 def delete_task(tasks):
     show_tasks(tasks)
     try:
-        choice = int(input("\n❌ Enter task number to delete: "))
+        choice = int(input("\n Enter task number to delete: "))
         task = tasks.pop(choice-1)
         save_tasks(tasks)
-        print(f"✅ Deleted task: {task['title']}\n")
+        print(f" Deleted task: {task['title']}\n")
     except (ValueError, IndexError):
-        print("⚠️ Invalid choice!\n")
+        print(" Invalid choice!\n")
 
 def main_menu():
     tasks = load_tasks()
@@ -67,11 +67,11 @@ def main_menu():
         banner()
         show_tasks(tasks)
         print("""
-🔸 Menu Options:
-  1️⃣  Add Task
-  2️⃣  Mark Task as Done
-  3️⃣  Delete Task
-  4️⃣  Exit
+ Menu Options:
+  1️  Add Task
+  2️  Mark Task as Done
+  3️  Delete Task
+  4️  Exit
 """)
         choice = input("Enter your choice: ")
 
@@ -82,13 +82,13 @@ def main_menu():
         elif choice == '3':
             delete_task(tasks)
         elif choice == '4':
-            print("\n🌸 Thank you for using My To-Do List App! 🌸\n")
+            print("\n Thank you for using My To-Do List App! 🌸\n")
             time.sleep(1)
             break
         else:
-            print("⚠️ Invalid choice!\n")
+            print(" Invalid choice!\n")
 
-        input("🔁 Press Enter to return to the menu...")
+        input(" Press Enter to return to the menu...")
 
 if __name__ == "__main__":
     main_menu()
